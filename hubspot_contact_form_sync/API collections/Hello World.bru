@@ -1,0 +1,15 @@
+meta {
+  name: Hello World
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://0.0.0.0:8000/api/hs_app/hello/
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Token {{TOKEN}}
+}

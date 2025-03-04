@@ -19,7 +19,7 @@ Moved to [settings](https://cookiecutter-django.readthedocs.io/en/latest/1-getti
 
 - To create a **superuser account**, use this command:
 
-      $ python manage.py createsuperuser
+      $ docker-compose -f docker-compose.local.yml run --rm django python manage.py createsuperuser
 
 For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
 

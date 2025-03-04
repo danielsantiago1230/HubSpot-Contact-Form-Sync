@@ -70,3 +70,5 @@ INSTALLED_APPS += ["django_extensions"]
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+HUBSPOT_ACCESS_TOKEN = env("HUBSPOT_ACCESS_TOKEN")
+HUBSPOT_CLIENT_SECRET = env("HUBSPOT_CLIENT_SECRET")
