@@ -7,3 +7,11 @@ Build a simple Django-based form where users submit their contact details, and t
 docker-compose -f docker-compose.local.yml up --build
 ```
 
+## Navigate to the project
+
+```bash
+http://0.0.0.0:8000/hs_app/contacts/
+```
+
+
+

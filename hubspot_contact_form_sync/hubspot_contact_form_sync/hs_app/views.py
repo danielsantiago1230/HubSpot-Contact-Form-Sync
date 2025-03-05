@@ -1,13 +1,17 @@
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django import forms
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import TemplateView
 from django.urls import reverse_lazy
+from django.http import Http404
 
 # Hubspot
 from hubspot import HubSpot
-from hubspot.crm.contacts import SimplePublicObjectInputForCreate
+from hubspot.crm.contacts import (
+    SimplePublicObjectInputForCreate,
+    SimplePublicObjectInput,
+)
 from hubspot.crm.contacts.exceptions import ApiException
 
 # Configuring HubSpot client
@@ -34,6 +38,39 @@ def create_contact(data):
         raise  # Re-raise the exception so it can be handled in form_valid
 
 
+# CRM API - Update Contact
+def update_contact(contact_id, data):
+    try:
+        simple_public_object_input = SimplePublicObjectInput(
+            properties={
+                "email": data["email"],
+                "firstname": data["first_name"],
+                "lastname": data["last_name"],
+                "phone": data["phone"],
+            }
+        )
+        api_response = api_client.crm.contacts.basic_api.update(
+            contact_id=contact_id, simple_public_object_input=simple_public_object_input
+        )
+        return api_response
+    except ApiException as e:
+        print("Exception when updating contact: %s\n" % e)
+        raise  # Re-raise the exception so it can be handled in form_valid
+
+
+# CRM API - Get Contact by ID
+def get_contact(contact_id):
+    try:
+        api_response = api_client.crm.contacts.basic_api.get_by_id(
+            contact_id=contact_id,
+            properties=["email", "firstname", "lastname", "phone"],
+        )
+        return api_response
+    except ApiException as e:
+        print("Exception when getting contact: %s\n" % e)
+        raise  # Re-raise the exception so it can be handled in the view
+
+
 # Contact Form
 class ContactForm(forms.Form):
     first_name = forms.CharField(
@@ -57,6 +94,12 @@ class ContactForm(forms.Form):
     )
 
 
+# Contact Update Form - Reusing the same fields as ContactForm
+class ContactUpdateForm(ContactForm):
+    # Hidden field to store the contact ID
+    contact_id = forms.CharField(widget=forms.HiddenInput())
+
+
 # Contact Form View
 class ContactFormView(FormView):
     template_name = "hs_app/contact_form.html"
@@ -77,18 +120,105 @@ class ContactFormView(FormView):
             create_contact(data)
             return super().form_valid(form)
         except ApiException as e:
-            # Extract just the "Contact already exists" message if present
             error_message = "HubSpot API Error"
-            if "Contact already exists" in str(e):
-                error_message = "Contact already exists"
-            else:
-                error_message = f"HubSpot API Error: {e}"
+
+            # Try to extract a more meaningful error message from the response
+            error_body = str(e)
+
+            # Check for common error patterns
+            if "already exists" in error_body.lower():
+                # Extract just the relevant part about the contact already existing
+                import re
+
+                match = re.search(r'"message":"([^"]+)"', error_body)
+                if match:
+                    error_message = match.group(1)
+                else:
+                    error_message = "A contact with this email already exists."
+            elif "CONFLICT" in error_body:
+                error_message = "There was a conflict creating this contact. The email may already be in use."
+
             print(f"Exception when creating contact: {e}")
             form.add_error(None, error_message)
             return super().form_invalid(form)
         except Exception as e:
             error_message = "An error occurred while processing your request. Please try again later."
             print(f"Unexpected error when creating contact: {e}")
+            form.add_error(None, error_message)
+            return super().form_invalid(form)
+
+
+# Contact Update View
+class ContactUpdateView(FormView):
+    template_name = "hs_app/contact_update.html"
+    form_class = ContactUpdateForm
+    success_url = reverse_lazy("hs_app:contact_list")
+
+    def get_initial(self):
+        # Get contact ID from URL
+        contact_id = self.kwargs.get("contact_id")
+        if not contact_id:
+            raise Http404("Contact not found")
+
+        try:
+            # Fetch contact data from HubSpot
+            contact = get_contact(contact_id)
+
+            # Initialize form with contact data
+            return {
+                "contact_id": contact_id,
+                "first_name": contact.properties.get("firstname", ""),
+                "last_name": contact.properties.get("lastname", ""),
+                "email": contact.properties.get("email", ""),
+                "phone": contact.properties.get("phone", ""),
+            }
+        except ApiException as e:
+            # If contact not found or API error
+            if "not found" in str(e).lower():
+                raise Http404("Contact not found")
+            raise  # Re-raise other API exceptions
+
+    def form_valid(self, form):
+        # Process the form data here
+        contact_id = form.cleaned_data["contact_id"]
+        data = {
+            "first_name": form.cleaned_data["first_name"],
+            "last_name": form.cleaned_data["last_name"],
+            "email": form.cleaned_data["email"],
+            "phone": form.cleaned_data["phone"],
+        }
+
+        # Update data in HubSpot
+        try:
+            update_contact(contact_id, data)
+            return super().form_valid(form)
+        except ApiException as e:
+            error_message = "HubSpot API Error"
+
+            # Try to extract a more meaningful error message from the response
+            error_body = str(e)
+
+            # Check for common error patterns
+            if "already exists" in error_body.lower():
+                # Extract just the relevant part about the contact already existing
+                import re
+
+                match = re.search(r'"message":"([^"]+)"', error_body)
+                if match:
+                    error_message = match.group(1)
+                else:
+                    error_message = "A contact with this email already exists."
+            elif "not found" in error_body.lower():
+                error_message = "Contact not found. It may have been deleted."
+            elif "CONFLICT" in error_body:
+                error_message = "There was a conflict updating this contact. The email may already be in use."
+
+            print(f"Exception when updating contact: {e}")
+            form.add_error(None, error_message)
+            return super().form_invalid(form)
+        except Exception as e:
+            error_message = "An error occurred while processing your request. Please try again later."
+            print(f"Unexpected error when updating contact: {e}")
             form.add_error(None, error_message)
             return super().form_invalid(form)
 

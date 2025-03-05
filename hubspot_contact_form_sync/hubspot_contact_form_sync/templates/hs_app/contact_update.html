@@ -6,17 +6,18 @@
         <div class="col-lg-8 col-md-10">
             <div class="contact-form-container position-relative">
                 <div class="form-header text-center">
-                    <h2>HubSpot Contact Form</h2>
-                    <p class="text-muted">Submit your contact information to be added to our HubSpot CRM.</p>
+                    <h2>Update Contact</h2>
+                    <p class="text-muted">Update contact information in HubSpot CRM.</p>
                 </div>
 
-                <button type="button" id="refresh-form" class="btn btn-outline-secondary position-absolute"
-                    title="Clear form">
-                    <i class="bi bi-arrow-clockwise"></i>
-                </button>
+                <a href="{% url 'hs_app:contact_list' %}" class="btn btn-outline-secondary position-absolute" 
+                   title="Back to contacts">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
 
                 <form method="post" class="contact-form" id="contact-form">
                     {% csrf_token %}
+                    {{ form.contact_id }}
 
                     {% if form.non_field_errors %}
                     <div class="alert alert-danger mb-4" role="alert">
@@ -28,7 +29,7 @@
                         <hr>
                         <p class="mb-0 mt-2">
                             <i class="bi bi-info-circle-fill me-2"></i>
-                            This email is already registered. You can <a href="{% url 'hs_app:contact_list' %}" class="alert-link">view all contacts</a> to find and edit this contact.
+                            Try using a different email address or <a href="{% url 'hs_app:contact_list' %}" class="alert-link">return to the contact list</a>.
                         </p>
                         {% endif %}
                     </div>
@@ -73,8 +74,11 @@
 
                     <div class="mt-4">
                         <button type="submit" class="btn btn-primary btn-lg submit-btn">
-                            <span>Submit to HubSpot</span>
+                            <span>Update Contact</span>
                         </button>
+                        <a href="{% url 'hs_app:contact_list' %}" class="btn btn-outline-secondary btn-lg ms-2">
+                            Cancel
+                        </a>
                     </div>
                 </form>
             </div>
@@ -100,7 +104,7 @@
         margin-bottom: 25px;
     }
 
-    #refresh-form {
+    .position-absolute {
         padding: 0.5rem;
         border-radius: 50%;
         width: 40px;
@@ -113,31 +117,8 @@
         z-index: 10;
     }
 
-    #refresh-form i {
+    .position-absolute i {
         font-size: 1.2rem;
     }
 </style>
-{% endblock %}
-
-{% block inline_javascript %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const refreshButton = document.getElementById('refresh-form');
-        const form = document.getElementById('contact-form');
-
-        refreshButton.addEventListener('click', function () {
-            // Clear all form inputs
-            const formInputs = form.querySelectorAll('input');
-            formInputs.forEach(input => {
-                input.value = '';
-            });
-
-            // Remove any error messages
-            const errorMessages = form.querySelectorAll('.invalid-feedback, .alert-danger');
-            errorMessages.forEach(element => {
-                element.style.display = 'none';
-            });
-        });
-    });
-</script>
-{% endblock %}
+{% endblock %} 
