@@ -13,5 +13,7 @@ docker-compose -f docker-compose.local.yml up --build
 http://0.0.0.0:8000/hs_app/contacts/
 ```
 
+Note: You will need to log in with admin credentials to access the HubSpot contact management features.
+
 
 

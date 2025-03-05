@@ -10,8 +10,8 @@
                     <p class="text-muted">Update contact information in HubSpot CRM.</p>
                 </div>
 
-                <a href="{% url 'hs_app:contact_list' %}" class="btn btn-outline-secondary position-absolute" 
-                   title="Back to contacts">
+                <a href="{% url 'hs_app:contact_list' %}" class="btn btn-outline-secondary position-absolute"
+                    title="Back to contacts">
                     <i class="bi bi-arrow-left"></i>
                 </a>
 
@@ -29,7 +29,8 @@
                         <hr>
                         <p class="mb-0 mt-2">
                             <i class="bi bi-info-circle-fill me-2"></i>
-                            Try using a different email address or <a href="{% url 'hs_app:contact_list' %}" class="alert-link">return to the contact list</a>.
+                            Try using a different email address or <a href="{% url 'hs_app:contact_list' %}"
+                                class="alert-link">return to the contact list</a>.
                         </p>
                         {% endif %}
                     </div>
@@ -76,9 +77,6 @@
                         <button type="submit" class="btn btn-primary btn-lg submit-btn">
                             <span>Update Contact</span>
                         </button>
-                        <a href="{% url 'hs_app:contact_list' %}" class="btn btn-outline-secondary btn-lg ms-2">
-                            Cancel
-                        </a>
                     </div>
                 </form>
             </div>
@@ -121,4 +119,4 @@
         font-size: 1.2rem;
     }
 </style>
-{% endblock %} 
+{% endblock %}

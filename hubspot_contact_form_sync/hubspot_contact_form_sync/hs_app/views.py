@@ -5,6 +5,8 @@ from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import TemplateView
 from django.urls import reverse_lazy
 from django.http import Http404
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 # Hubspot
 from hubspot import HubSpot
@@ -101,10 +103,11 @@ class ContactUpdateForm(ContactForm):
 
 
 # Contact Form View
-class ContactFormView(FormView):
+class ContactFormView(LoginRequiredMixin, FormView):
     template_name = "hs_app/contact_form.html"
     form_class = ContactForm
     success_url = reverse_lazy("hs_app:contact_success")
+    login_url = '/admin/login/'
 
     def form_valid(self, form):
         # Process the form data here
@@ -149,10 +152,11 @@ class ContactFormView(FormView):
 
 
 # Contact Update View
-class ContactUpdateView(FormView):
+class ContactUpdateView(LoginRequiredMixin, FormView):
     template_name = "hs_app/contact_update.html"
     form_class = ContactUpdateForm
     success_url = reverse_lazy("hs_app:contact_list")
+    login_url = '/admin/login/'
 
     def get_initial(self):
         # Get contact ID from URL
@@ -223,13 +227,15 @@ class ContactUpdateView(FormView):
             return super().form_invalid(form)
 
 
+@login_required(login_url='/admin/login/')
 def contact_success(request):
     return render(request, "hs_app/contact_success.html")
 
 
 # Contact List View
-class ContactListView(TemplateView):
+class ContactListView(LoginRequiredMixin, TemplateView):
     template_name = "hs_app/contact_list.html"
+    login_url = '/admin/login/'
 
     def get(self, request, *args, **kwargs):
         # Reset pagination cursors if going back to page 1
@@ -273,7 +279,8 @@ class ContactListView(TemplateView):
         try:
             # Get contacts with pagination
             contacts_page = api_client.crm.contacts.basic_api.get_page(
-                limit=page_size, after=after_cursor
+                limit=page_size, after=after_cursor,
+                properties=["email", "firstname", "lastname", "phone", "createdate"]
             )
 
             # Extract contacts from response
