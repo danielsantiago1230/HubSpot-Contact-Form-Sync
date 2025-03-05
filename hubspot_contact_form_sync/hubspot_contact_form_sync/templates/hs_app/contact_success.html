@@ -7,9 +7,14 @@
             <div class="contact-form-container text-center">
                 <h2 class="mb-3">Contact Added Successfully</h2>
                 <p class="lead mb-4">Your contact information has been successfully submitted to HubSpot.</p>
-                <a href="{% url 'hs_app:contact_form' %}" class="btn btn-outline-primary">
-                    Back to Contact Form
-                </a>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{% url 'hs_app:contact_form' %}" class="btn btn-outline-primary">
+                        Back to Contact Form
+                    </a>
+                    <a href="{% url 'hs_app:contact_list' %}" class="btn btn-primary">
+                        <i class="bi bi-people me-1"></i> View All Contacts
+                    </a>
+                </div>
             </div>
         </div>
     </div>
