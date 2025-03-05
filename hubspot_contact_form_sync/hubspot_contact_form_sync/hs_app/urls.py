@@ -1,8 +1,10 @@
 from django.urls import path
-from hubspot_contact_form_sync.hs_app.views import HelloWorldView
+from hubspot_contact_form_sync.hs_app.views import ContactFormView, contact_success
+from django.urls import reverse_lazy
 
 app_name = "hs_app"
 
 urlpatterns = [
-    path("hello/", HelloWorldView.as_view(), name="hello_world"),
+    path('contact/', ContactFormView.as_view(), name='contact_form'),
+    path('contact/success/', contact_success, name='contact_success'),
 ]

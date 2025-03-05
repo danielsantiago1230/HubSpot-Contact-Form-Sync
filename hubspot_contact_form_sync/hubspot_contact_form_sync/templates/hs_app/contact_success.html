@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="contact-form-container text-center">
+                <h2 class="mb-3">Contact Added Successfully</h2>
+                <p class="lead mb-4">Your contact information has been successfully submitted to HubSpot.</p>
+                <a href="{% url 'hs_app:contact_form' %}" class="btn btn-outline-primary">
+                    Back to Contact Form
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+{% endblock %}

@@ -23,6 +23,7 @@ urlpatterns = [
     path("users/", include("hubspot_contact_form_sync.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
+    path("hs_app/", include("hubspot_contact_form_sync.hs_app.urls", namespace="hs_app")),
     # ...
     # Media files
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
