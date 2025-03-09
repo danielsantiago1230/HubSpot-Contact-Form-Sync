@@ -5,38 +5,14 @@ entryPoints:
   web:
     # http
     address: ':80'
-    # http:
-    #   # https://doc.traefik.io/traefik/routing/entrypoints/#entrypoint
-    #   redirections:
-    #     entryPoint:
-    #       to: web-secure
-
-  # web-secure:
-  #   # https
-  #   address: ':443'
-
-# certificatesResolvers:
-#   letsencrypt:
-#     # https://doc.traefik.io/traefik/https/acme/#lets-encrypt
-#     acme:
-#       email: 'danielsantiago@gmail.com'
-#       storage: /etc/traefik/acme/acme.json
-#       # https://doc.traefik.io/traefik/https/acme/#httpchallenge
-#       httpChallenge:
-#         entryPoint: web
 
 http:
   routers:
-    web-secure-router:
+    web-router:
       rule: 'Host(`{{ env "DOMAIN" }}`)'
       entryPoints:
-        - web-secure
-      middlewares:
-        - csrf
+        - web
       service: django
-      tls:
-        # https://doc.traefik.io/traefik/routing/routers/#certresolver
-        certResolver: letsencrypt
 
   middlewares:
     csrf:
