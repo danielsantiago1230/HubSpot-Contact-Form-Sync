@@ -31,7 +31,7 @@
                             </thead>
                             <tbody>
                                 {% for contact in contacts %}
-                                <tr class="contact-row" data-contact-id="{{ contact.id }}">
+                                <tr class="contact-row" data-contact-id="{{ contact.id }}" data-contact-url="{% url 'hs_app:contact_update' contact_id=contact.id %}">
                                     <td>{{ contact.properties.firstname }} {{ contact.properties.lastname }}</td>
                                     <td>{{ contact.properties.email }}</td>
                                     <td>{{ contact.properties.phone }}</td>
@@ -122,8 +122,8 @@
                     return;
                 }
                 
-                const contactId = this.getAttribute('data-contact-id');
-                window.location.href = `/contact/${contactId}/update/`;
+                const contactUrl = this.getAttribute('data-contact-url');
+                window.location.href = contactUrl;
             });
         });
     });
