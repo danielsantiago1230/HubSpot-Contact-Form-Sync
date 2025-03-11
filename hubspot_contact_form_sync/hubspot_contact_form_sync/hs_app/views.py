@@ -40,6 +40,19 @@ def create_contact(data):
         raise  # Re-raise the exception so it can be handled in form_valid
 
 
+# CRM API - Get Contact by ID
+def get_contact(contact_id):
+    try:
+        api_response = api_client.crm.contacts.basic_api.get_by_id(
+            contact_id=contact_id,
+            properties=["email", "firstname", "lastname", "phone"],
+        )
+        return api_response
+    except ApiException as e:
+        print("Exception when getting contact: %s\n" % e)
+        raise  # Re-raise the exception so it can be handled in the view
+
+
 # CRM API - Update Contact
 def update_contact(contact_id, data):
     try:
@@ -58,19 +71,6 @@ def update_contact(contact_id, data):
     except ApiException as e:
         print("Exception when updating contact: %s\n" % e)
         raise  # Re-raise the exception so it can be handled in form_valid
-
-
-# CRM API - Get Contact by ID
-def get_contact(contact_id):
-    try:
-        api_response = api_client.crm.contacts.basic_api.get_by_id(
-            contact_id=contact_id,
-            properties=["email", "firstname", "lastname", "phone"],
-        )
-        return api_response
-    except ApiException as e:
-        print("Exception when getting contact: %s\n" % e)
-        raise  # Re-raise the exception so it can be handled in the view
 
 
 # CRM API - Delete Contact
@@ -118,7 +118,7 @@ class ContactFormView(LoginRequiredMixin, FormView):
     template_name = "hs_app/contact_form.html"
     form_class = ContactForm
     success_url = reverse_lazy("hs_app:contact_success")
-    login_url = '/admin/login/'
+    login_url = "/admin/login/"
 
     def form_valid(self, form):
         # Process the form data here
@@ -167,7 +167,7 @@ class ContactUpdateView(LoginRequiredMixin, FormView):
     template_name = "hs_app/contact_update.html"
     form_class = ContactUpdateForm
     success_url = reverse_lazy("hs_app:contact_list")
-    login_url = '/admin/login/'
+    login_url = "/admin/login/"
 
     def get_initial(self):
         # Get contact ID from URL
@@ -238,7 +238,7 @@ class ContactUpdateView(LoginRequiredMixin, FormView):
             return super().form_invalid(form)
 
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url="/admin/login/")
 def contact_success(request):
     return render(request, "hs_app/contact_success.html")
 
@@ -246,45 +246,47 @@ def contact_success(request):
 # Contact Delete View
 class ContactDeleteView(LoginRequiredMixin, TemplateView):
     template_name = "hs_app/contact_delete.html"
-    login_url = '/admin/login/'
-    
+    login_url = "/admin/login/"
+
     def post(self, request, *args, **kwargs):
         contact_id = self.kwargs.get("contact_id")
         if not contact_id:
             raise Http404("Contact not found")
-            
+
         try:
             # Delete the contact in HubSpot
             delete_contact(contact_id)
             # Redirect to the contact list page
-            return redirect('hs_app:contact_list')
+            return redirect("hs_app:contact_list")
         except ApiException as e:
             error_message = "HubSpot API Error"
-            
+
             # Try to extract a more meaningful error message
             error_body = str(e)
-            
+
             if "not found" in error_body.lower():
                 error_message = "Contact not found. It may have been already deleted."
-            
+
             print(f"Exception when deleting contact: {e}")
-            return render(request, self.template_name, {
-                'error': error_message,
-                'contact_id': contact_id
-            })
+            return render(
+                request,
+                self.template_name,
+                {"error": error_message, "contact_id": contact_id},
+            )
         except Exception as e:
             error_message = "An error occurred while processing your request. Please try again later."
             print(f"Unexpected error when deleting contact: {e}")
-            return render(request, self.template_name, {
-                'error': error_message,
-                'contact_id': contact_id
-            })
+            return render(
+                request,
+                self.template_name,
+                {"error": error_message, "contact_id": contact_id},
+            )
 
 
 # Contact List View
 class ContactListView(LoginRequiredMixin, TemplateView):
     template_name = "hs_app/contact_list.html"
-    login_url = '/admin/login/'
+    login_url = "/admin/login/"
 
     def get(self, request, *args, **kwargs):
         # Reset pagination cursors if going back to page 1
@@ -328,8 +330,9 @@ class ContactListView(LoginRequiredMixin, TemplateView):
         try:
             # Get contacts with pagination
             contacts_page = api_client.crm.contacts.basic_api.get_page(
-                limit=page_size, after=after_cursor,
-                properties=["email", "firstname", "lastname", "phone", "createdate"]
+                limit=page_size,
+                after=after_cursor,
+                properties=["email", "firstname", "lastname", "phone", "createdate"],
             )
 
             # Extract contacts from response

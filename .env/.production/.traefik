@@ -1,0 +1,2 @@
+# Domain configuration EXAMPLE envs you will have to move this to hubspot_contact_form_sync/.envs/.production
+DOMAIN=your-domain

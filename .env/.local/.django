@@ -1,0 +1,10 @@
+# EXAMPLE envs you will have to move this to hubspot_contact_form_sync/.env/.local
+
+# General
+# ------------------------------------------------------------------------------
+USE_DOCKER=yes
+IPYTHONDIR=/app/.ipython
+
+# Hubspot
+HUBSPOT_ACCESS_TOKEN=your-access-token
+HUBSPOT_CLIENT_SECRET=your-client-secret

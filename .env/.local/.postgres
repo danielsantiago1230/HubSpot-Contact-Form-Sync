@@ -1,0 +1,7 @@
+# PostgreSQL Example should be in hubspot_contact_form_sync/.envs/.local/
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=hubspot_contact_form_sync
+POSTGRES_USER=your-postgres-user
+POSTGRES_PASSWORD=your-postgres-password
