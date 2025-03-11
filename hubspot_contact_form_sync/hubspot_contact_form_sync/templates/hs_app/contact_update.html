@@ -5,15 +5,19 @@
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
             <div class="contact-form-container position-relative">
+                <a href="{% url 'hs_app:contact_list' %}" class="btn btn-outline-secondary back-button"
+                    title="Back to contacts">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                
+                <a href="{% url 'hs_app:contact_delete' form.contact_id.value %}" class="btn btn-outline-danger delete-button">
+                    <i class="bi bi-trash me-2"></i>Delete
+                </a>
+
                 <div class="form-header text-center">
                     <h2>Update Contact</h2>
                     <p class="text-muted">Update contact information in HubSpot CRM.</p>
                 </div>
-
-                <a href="{% url 'hs_app:contact_list' %}" class="btn btn-outline-secondary position-absolute"
-                    title="Back to contacts">
-                    <i class="bi bi-arrow-left"></i>
-                </a>
 
                 <form method="post" class="contact-form" id="contact-form">
                     {% csrf_token %}
@@ -74,9 +78,11 @@
                     </div>
 
                     <div class="mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg submit-btn">
-                            <span>Update Contact</span>
-                        </button>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary btn-lg submit-btn">
+                                <span>Update Contact</span>
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -102,7 +108,8 @@
         margin-bottom: 25px;
     }
 
-    .position-absolute {
+    .back-button {
+        position: absolute;
         padding: 0.5rem;
         border-radius: 50%;
         width: 40px;
@@ -111,11 +118,19 @@
         align-items: center;
         justify-content: center;
         top: 15px;
+        left: 15px;
+        z-index: 10;
+    }
+
+    .delete-button {
+        position: absolute;
+        padding: 0.5rem 1rem;
+        top: 15px;
         right: 15px;
         z-index: 10;
     }
 
-    .position-absolute i {
+    .back-button i {
         font-size: 1.2rem;
     }
 </style>

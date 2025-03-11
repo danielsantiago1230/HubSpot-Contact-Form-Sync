@@ -73,6 +73,17 @@ def get_contact(contact_id):
         raise  # Re-raise the exception so it can be handled in the view
 
 
+# CRM API - Delete Contact
+def delete_contact(contact_id):
+    try:
+        # Use the archive endpoint to delete the contact
+        api_response = api_client.crm.contacts.basic_api.archive(contact_id=contact_id)
+        return api_response
+    except ApiException as e:
+        print("Exception when deleting contact: %s\n" % e)
+        raise  # Re-raise the exception so it can be handled in the view
+
+
 # Contact Form
 class ContactForm(forms.Form):
     first_name = forms.CharField(
@@ -230,6 +241,44 @@ class ContactUpdateView(LoginRequiredMixin, FormView):
 @login_required(login_url='/admin/login/')
 def contact_success(request):
     return render(request, "hs_app/contact_success.html")
+
+
+# Contact Delete View
+class ContactDeleteView(LoginRequiredMixin, TemplateView):
+    template_name = "hs_app/contact_delete.html"
+    login_url = '/admin/login/'
+    
+    def post(self, request, *args, **kwargs):
+        contact_id = self.kwargs.get("contact_id")
+        if not contact_id:
+            raise Http404("Contact not found")
+            
+        try:
+            # Delete the contact in HubSpot
+            delete_contact(contact_id)
+            # Redirect to the contact list page
+            return redirect('hs_app:contact_list')
+        except ApiException as e:
+            error_message = "HubSpot API Error"
+            
+            # Try to extract a more meaningful error message
+            error_body = str(e)
+            
+            if "not found" in error_body.lower():
+                error_message = "Contact not found. It may have been already deleted."
+            
+            print(f"Exception when deleting contact: {e}")
+            return render(request, self.template_name, {
+                'error': error_message,
+                'contact_id': contact_id
+            })
+        except Exception as e:
+            error_message = "An error occurred while processing your request. Please try again later."
+            print(f"Unexpected error when deleting contact: {e}")
+            return render(request, self.template_name, {
+                'error': error_message,
+                'contact_id': contact_id
+            })
 
 
 # Contact List View

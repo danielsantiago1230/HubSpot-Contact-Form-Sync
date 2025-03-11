@@ -1,5 +1,11 @@
 from django.urls import path
-from hubspot_contact_form_sync.hs_app.views import ContactFormView, contact_success, ContactListView, ContactUpdateView
+from hubspot_contact_form_sync.hs_app.views import (
+    ContactFormView, 
+    contact_success, 
+    ContactListView, 
+    ContactUpdateView,
+    ContactDeleteView
+)
 from django.urls import reverse_lazy
 
 app_name = "hs_app"
@@ -9,4 +15,5 @@ urlpatterns = [
     path('contact/success/', contact_success, name='contact_success'),
     path('contacts/', ContactListView.as_view(), name='contact_list'),
     path('contact/<str:contact_id>/update/', ContactUpdateView.as_view(), name='contact_update'),
+    path('contact/<str:contact_id>/delete/', ContactDeleteView.as_view(), name='contact_delete'),
 ]
