@@ -183,10 +183,14 @@ docker-compose -f docker-compose.production.yml up --build -d
 ```
 
 🔟 **Verify the Deployment**
-Check if your containers are running:
+
+Once your containers are running, you can access the application:
+
+- **Django Admin**: Navigate to `http://<your-ec2-public-ip>/DJANGO_ADMIN_URL` and sign in with the admin user you created.
+- **Contacts Page**: After signing in, go to `http://<your-ec2-public-ip>/hs_app/contacts/` to manage contacts.
 
 ```sh
-docker ps
+docker-compose -f docker-compose.production.yml logs -f
 ```
 
 🛑 **Stopping the EC2 Instance to Avoid Charges**
@@ -195,6 +199,8 @@ To prevent unnecessary AWS charges, stop your EC2 instance when you're done:
 ```sh
 aws ec2 stop-instances --profile <your-aws-profile> --instance-ids <your-instance-id>
 ```
+
+*Keep in mind that every time you start the EC2 instance, you will have a new public IP address. and you will need to update the environment variables with the new IP address.*
 
 **What's Not Included in This Deployment**
 
