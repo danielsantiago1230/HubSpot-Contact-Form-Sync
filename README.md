@@ -1,6 +1,7 @@
 # HubSpot-Contact-Form-Sync
 
 This project is a Django-based application that allows admin users to perform CRUD operations on contact information, which is automatically synced with HubSpot CRM using the `hubspot-api-client` library (version 11.1.0).
+Watch the Demo: [Loom Video](https://lnkd.in/eF2eSWhz)
 
 ## Prerequisites
 
